@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,23 +10,25 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// GetHomeremediesDetails is a handler to get all Homeremedies details.
+// GetHomeremediesDetails is a handler to retrieve all Homeremedies details.
 // It fetches all Homeremedies details from the repository and returns them as a response.
-// @Summary Get all Homeremedies details
-// @Description Get all Homeremedies details
+// @Summary Retrieve all Homeremedies details
+// @Description Fetch all Homeremedies details, with optional filtering based on query parameters.
 // @Tags Homeremedies
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.Homeremedies
-// @Router /Homeremedies [get]
+// @Param Authorization header string true "Bearer token"
+// @Param id query int false "Homeremedies ID" 
+// @Success 200 {array} models.Homeremedies "Successfully retrieved Homeremedies details"
+// @Failure 400 {object} responses.ApplicationResponse "Invalid value for 'id'"
+// @Failure 401 {object} responses.ApplicationResponse "Unauthorized access"
+// @Failure 500 {object} responses.ApplicationResponse "Failed to fetch Homeremedies details"
+// @Router /home-remedies [get]
 func GetHomeremediesDetails(HomeremediesRepo repository.MongoRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var HomeremediesList []models.Homeremedies
 
 		role, _ := c.Get("role")
-		// here role is interface and store as key value pair get role now
-		fmt.Println(role)
-
 		if role != "superadmin" && role != "admin" && role != "user" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"status":  http.StatusUnauthorized,

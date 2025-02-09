@@ -73,6 +73,7 @@ const PaginationTable = () => {
         []
     );
     const [serverError, setServerError] = useState(false);
+    const [networkError, setNetworkError] = useState(false)
 
 
     const [data, setData] = useState<Person[]>([]);
@@ -125,9 +126,13 @@ const PaginationTable = () => {
                 setFilteredData(mappedData); // Initialize filtered data with all data
                 setTotalData(mappedData.length);
                 setLoading(false);
-            } catch (error) {
+            } catch (error:any) {
                 console.error('Error fetching data:', error);
+                if (error.message === 'Network Error') {
+                    setNetworkError(true)
+                } else {
                 setServerError(true);
+                }
                 setLoading(false);
             }
         };
@@ -197,7 +202,19 @@ const PaginationTable = () => {
 
     return (
         <div>
-            {serverError ? (
+            { networkError ? (
+                <div className='flex flex-col items-center justify-center'>
+                    <Alert showIcon className="mb-4" type="danger">
+                        Network error: Please check your connection.
+                    </Alert>
+                    <DoubleSidedImage
+                        src="/img/others/img-2.png"
+                        darkModeSrc="/img/others/img-2-dark.png"
+                        alt="Network Error"
+                    />
+                </div>
+            ) : 
+            serverError ? (
                 <div className='flex flex-col items-center justify-center'>
                     <Alert showIcon className="mb-4" type="danger">
                         The server is not running. Please try again later.
@@ -213,7 +230,7 @@ const PaginationTable = () => {
             <div>
                 <h1  className="font-semibold">Users Data</h1>
             </div>
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex  sm:justify-between items-center mb-4">
                <span></span>
                 <div className="flex items-center ">
                     <Input className="mr-2" placeholder="Search..." value={searchTerm} onChange={handleSearch} />
